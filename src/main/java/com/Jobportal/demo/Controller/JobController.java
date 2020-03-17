@@ -1,9 +1,6 @@
 package com.Jobportal.demo.Controller;
 
-import com.Jobportal.demo.Model.AppliedJobs;
-import com.Jobportal.demo.Model.Job;
-import com.Jobportal.demo.Model.Registeration;
-import com.Jobportal.demo.Model.User;
+import com.Jobportal.demo.Model.*;
 import com.Jobportal.demo.Repository.AppliedJobRepository;
 import com.Jobportal.demo.Repository.JobRepository;
 import com.Jobportal.demo.Repository.RegisterationRepository;
@@ -11,21 +8,18 @@ import com.Jobportal.demo.Repository.UserRepository;
 import com.Jobportal.demo.Request.JobRequest;
 import com.Jobportal.demo.Request.LoginUserRequest;
 import com.Jobportal.demo.Request.RegisterationRequest;
-//import com.Jobportal.demo.Request.SessionRequest;
+import com.Jobportal.demo.Model.SessionIds;
 import com.Jobportal.demo.Response.AllEligibleJobResponse;
 import com.Jobportal.demo.Response.LoginUserResponse;
 import com.Jobportal.demo.Service.IAllEligibleJobService;
 import com.Jobportal.demo.Service.ILoginJobService;
-//import com.Jobportal.demo.Service.ISessionToken;
-import com.Jobportal.demo.Service.Impl.AllEligibleJobService;
+import com.Jobportal.demo.Repository.SessionTokenRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
 import java.util.*;
 
 @RestController
@@ -49,8 +43,8 @@ public class JobController {
     @Autowired
     ILoginJobService iLoginJobService;
 
-   /* @Autowired
-    ISessionToken iSessionToken;*/
+    @Autowired
+    SessionTokenRepository iSessionToken;
 
     @PostMapping(value = "/saveUser")
     @ResponseStatus(HttpStatus.CREATED)
@@ -118,13 +112,24 @@ public class JobController {
         return new ResponseEntity<LoginUserResponse>(loginUserResponse, HttpStatus.OK);
     }
 
-    /*@PostMapping(value = "/addSessiontoken")
+    @PostMapping(value = "/createSessiontoken")
     @ResponseStatus(HttpStatus.OK)
-    public boolean tokenSuccess(@RequestBody SessionRequest request) throws Exception {
-        boolean result = iSessionToken.saveSessionToken(request.getToken(),request.getUsername());
+    public String createSessionToken(@RequestBody SessionIds request) throws Exception {
+        SessionIds sessionIds = new SessionIds(request.getToken(),request.getUsername());
+         iSessionToken.save(sessionIds);
 
-      return result;
+     //   boolean result = iSessionToken.saveSessionToken(request.getToken(),request.getUsername());
+
+      return null;
     }
-*/
+
+    @GetMapping(value = "/getSessiontoken")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<String> createSessionToken(@RequestParam (value = "username") String username) throws Exception {
+        String result = iSessionToken.findSessionTokenDb(username);
+        return new ResponseEntity<String>(result, HttpStatus.OK);
+
+    }
+
 
 }

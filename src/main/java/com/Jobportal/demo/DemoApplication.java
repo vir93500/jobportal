@@ -1,6 +1,6 @@
 package com.Jobportal.demo;
 
-//import com.Jobportal.demo.Request.SessionRequest;
+//import com.Jobportal.demo.Model.SessionIds;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -21,8 +21,8 @@ public class DemoApplication {
 	}
 
 	@Bean
-	RedisTemplate<String, SessionRequest> redisTemplate() {
-		RedisTemplate<String, SessionRequest> redisTemplate = new RedisTemplate<>();
+	RedisTemplate<String, SessionIds> redisTemplate() {
+		RedisTemplate<String, SessionIds> redisTemplate = new RedisTemplate<>();
 		redisTemplate.setConnectionFactory(jedisConnectionFactory());
 		return redisTemplate;
 	}*/
