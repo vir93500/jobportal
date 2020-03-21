@@ -43,9 +43,6 @@ public class JobController {
     @Autowired
     SessionTokenRepository iSessionToken;
 
-    @Autowired
-    SubscriptionRepository subscriptionRepository;
-
     @PostMapping(value = "/saveUser")
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<Object> registrationUser(@RequestBody RegisterationRequest request) throws Exception {
@@ -128,27 +125,6 @@ public class JobController {
     public ResponseEntity<String> createSessionToken(@RequestParam (value = "username") String username) throws Exception {
         String result = iSessionToken.findSessionTokenDb(username);
         return new ResponseEntity<String>(result, HttpStatus.OK);
-    }
-
-    @PostMapping(value = "/addSubscription")
-    @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<Object> addSubscription(@RequestBody SubscriptionCreationRequest request) throws Exception {
-        try{
-            System.out.println("subss"+request.getSubscriptionName());
-
-            String subsname = subscriptionRepository.getSubscriptionByName(request.getSubscriptionName());
-            if(subsname!="") {
-                Subscriptions subscriptions = new Subscriptions(request.getSubscriptionName(), request.getSubscriptionValidity(), request.getTotalJobsApply(), request.getCompanies(), request.getColor(), request.getPrice());
-                subscriptionRepository.save(subscriptions);
-            }
-            else
-                return ResponseEntity.badRequest().build();
-        }
-        catch(Exception ex){
-            ex.printStackTrace();
-            throw new Exception();
-        }
-        return ResponseEntity.ok().build();
     }
 
 
