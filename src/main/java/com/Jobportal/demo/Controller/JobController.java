@@ -1,19 +1,16 @@
 package com.Jobportal.demo.Controller;
 
 import com.Jobportal.demo.Model.*;
-import com.Jobportal.demo.Repository.AppliedJobRepository;
-import com.Jobportal.demo.Repository.JobRepository;
-import com.Jobportal.demo.Repository.RegisterationRepository;
-import com.Jobportal.demo.Repository.UserRepository;
+import com.Jobportal.demo.Repository.*;
 import com.Jobportal.demo.Request.JobRequest;
 import com.Jobportal.demo.Request.LoginUserRequest;
 import com.Jobportal.demo.Request.RegisterationRequest;
 import com.Jobportal.demo.Model.SessionIds;
+import com.Jobportal.demo.Request.SubscriptionCreationRequest;
 import com.Jobportal.demo.Response.AllEligibleJobResponse;
 import com.Jobportal.demo.Response.LoginUserResponse;
 import com.Jobportal.demo.Service.IAllEligibleJobService;
 import com.Jobportal.demo.Service.ILoginJobService;
-import com.Jobportal.demo.Repository.SessionTokenRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -45,6 +42,9 @@ public class JobController {
 
     @Autowired
     SessionTokenRepository iSessionToken;
+
+    @Autowired
+    SubscriptionRepository subscriptionRepository;
 
     @PostMapping(value = "/saveUser")
     @ResponseStatus(HttpStatus.CREATED)
@@ -128,7 +128,27 @@ public class JobController {
     public ResponseEntity<String> createSessionToken(@RequestParam (value = "username") String username) throws Exception {
         String result = iSessionToken.findSessionTokenDb(username);
         return new ResponseEntity<String>(result, HttpStatus.OK);
+    }
 
+    @PostMapping(value = "/addSubscription")
+    @ResponseStatus(HttpStatus.CREATED)
+    public ResponseEntity<Object> addSubscription(@RequestBody SubscriptionCreationRequest request) throws Exception {
+        try{
+            System.out.println("subss"+request.getSubscriptionName());
+
+            String subsname = subscriptionRepository.getSubscriptionByName(request.getSubscriptionName());
+            if(subsname!="") {
+                Subscriptions subscriptions = new Subscriptions(request.getSubscriptionName(), request.getSubscriptionValidity(), request.getTotalJobsApply(), request.getCompanies(), request.getColor(), request.getPrice());
+                subscriptionRepository.save(subscriptions);
+            }
+            else
+                return ResponseEntity.badRequest().build();
+        }
+        catch(Exception ex){
+            ex.printStackTrace();
+            throw new Exception();
+        }
+        return ResponseEntity.ok().build();
     }
 
 

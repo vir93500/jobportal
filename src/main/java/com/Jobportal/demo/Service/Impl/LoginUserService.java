@@ -7,6 +7,9 @@ import com.Jobportal.demo.Service.ILoginJobService;
 import com.Jobportal.demo.Repository.SessionTokenRepository;
 import com.Jobportal.demo.Service.ITokenService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -27,6 +30,10 @@ public class LoginUserService implements ILoginJobService {
     private final static String FAIL = "Fail";
 
     @Override
+    @Caching(
+            put= { @CachePut(value= "sessionTokenCache", key= "#username") },
+            evict= { @CacheEvict(value= "allSessionTokenCache", allEntries= true) }
+    )
     public LoginUserResponse loginUserStatus(List<User> users, String username, String password, String clientId) throws Exception {
         String txnToken = null;
         String status = FAIL;
@@ -39,7 +46,6 @@ public class LoginUserService implements ILoginJobService {
                      SessionIds sessionIds = new SessionIds(txnToken, user.getUsername());
                      iSessionToken.save(sessionIds);
                  }
-
 
             /*   Map userHash = new ObjectMapper().convertValue(user, Map.class);
                 redisTemplate.opsForHash().put(username, txnToken, userHash);*/

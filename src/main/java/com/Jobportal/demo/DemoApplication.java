@@ -13,6 +13,7 @@ import org.springframework.data.redis.repository.configuration.EnableRedisReposi
 @SpringBootApplication
 //@EnableAutoConfiguration
 //@EnableRedisRepositories
+@EnableCaching
 public class DemoApplication {
 
 /*	@Bean
