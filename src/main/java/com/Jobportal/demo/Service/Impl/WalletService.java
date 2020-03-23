@@ -1,5 +1,9 @@
 package com.Jobportal.demo.Service.Impl;
 
+import com.Jobportal.demo.Exception.ExceptionCodes;
+import com.Jobportal.demo.Exception.InsufficientMoneyException;
+import com.Jobportal.demo.Exception.UserNotFoundException;/*
+import com.Jobportal.demo.Exception.WalletRelatedException;*/
 import com.Jobportal.demo.Model.AddMoney;
 import com.Jobportal.demo.Model.TransactionId;
 import com.Jobportal.demo.Repository.AddMoneyRepository;
@@ -14,6 +18,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+
+import static com.Jobportal.demo.Exception.ExceptionCodes.USER_NOT_FOUND;
 
 @Component
 public class WalletService implements IWalletService {
@@ -49,9 +55,9 @@ public class WalletService implements IWalletService {
 
     public AddMoneyResponse addMoneytInWallet(AddMoneyRequest addMoneyRequest) throws Exception {
         //check session token is present or not
-        if(sessionTokenRepository.findSessionTokenDb(addMoneyRequest.getUsername())==null){
+        if(sessionTokenRepository.findSessionTokenDb(addMoneyRequest.getUsername())!=null){
             System.out.println("User is not logged in");
-             throw new Exception();
+             throw new UserNotFoundException();
         }
 
         boolean isRequestedMoneyCorrect = true;
@@ -60,7 +66,7 @@ public class WalletService implements IWalletService {
             isRequestedMoneyCorrect=false;
         }
         if(!isRequestedMoneyCorrect){
-            throw new Exception("Requested balance is less than 4K");
+            throw new InsufficientMoneyException();
         }
         String transId=transIdGenerator();
         addMoneyResponse.setTransId(transId);

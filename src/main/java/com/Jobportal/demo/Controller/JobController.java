@@ -1,5 +1,8 @@
 package com.Jobportal.demo.Controller;
 
+import com.Jobportal.demo.Exception.ReallyNeedException.InternalServerErrorException;
+import com.Jobportal.demo.Exception.UserAlreadyExistException;
+import com.Jobportal.demo.Exception.UserNotFoundException;
 import com.Jobportal.demo.Model.*;
 import com.Jobportal.demo.Repository.*;
 import com.Jobportal.demo.Request.JobRequest;
@@ -53,11 +56,11 @@ public class JobController {
                 registerationRepository.save(registeration);
             }
             else
-                return ResponseEntity.badRequest().build();
+                throw new UserAlreadyExistException();
         }
         catch(Exception ex){
             ex.printStackTrace();
-            throw new Exception();
+            throw new InternalServerErrorException();
         }
         return ResponseEntity.ok().build();
     }
@@ -71,14 +74,14 @@ public class JobController {
 
     @PostMapping(value = "/addNewJob")
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<Object> addNewJob(@RequestBody JobRequest request) throws Exception {
+    public ResponseEntity<Object> addNewJob(@RequestBody JobRequest request){
         try {
             Job job = new Job(request.getCompanyName(), request.getLocation(), request.getJobProfile(), request.getExperienceRequired(), request.getSkillRequired(), request.getMinNoticePeriod(), request.getAlreadyAppliedInSixMonths(), request.getBlacklisted(), request.getAnyOffer());
             jobRepository.save(job);
         }
         catch(Exception ex){
             ex.printStackTrace();
-            throw new Exception();
+            throw new InternalServerErrorException();
         }
         return ResponseEntity.ok().build();
     }
@@ -104,20 +107,17 @@ public class JobController {
          final List<User> users = userRepository.ListUser();
          final LoginUserResponse loginUserResponse = iLoginJobService.loginUserStatus(users,request.getUsername(),request.getPassword(),clientId);
          if(loginUserResponse.getStatus()=="FAIL")
-             return new ResponseEntity<LoginUserResponse>(loginUserResponse, HttpStatus.BAD_REQUEST);
+             throw new UserNotFoundException();
          else
         return new ResponseEntity<LoginUserResponse>(loginUserResponse, HttpStatus.OK);
     }
 
     @PostMapping(value = "/createSessiontoken")
     @ResponseStatus(HttpStatus.OK)
-    public String createSessionToken(@RequestBody SessionIds request) throws Exception {
+    public ResponseEntity<String> createSessionToken(@RequestBody SessionIds request) throws Exception {
         SessionIds sessionIds = new SessionIds(request.getToken(),request.getUsername());
          iSessionToken.save(sessionIds);
-
-     //   boolean result = iSessionToken.saveSessionToken(request.getToken(),request.getUsername());
-
-      return null;
+      return ResponseEntity.ok().build();
     }
 
     @GetMapping(value = "/getSessiontoken")

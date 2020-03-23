@@ -1,5 +1,6 @@
 package com.Jobportal.demo.Controller;
 
+import com.Jobportal.demo.Exception.SubscriptionAlreadyExistException;
 import com.Jobportal.demo.Model.Subscriptions;
 import com.Jobportal.demo.Repository.SubscriptionRepository;
 import com.Jobportal.demo.Request.SubscriptionCreationRequest;
@@ -29,7 +30,7 @@ public class SubscriptionController {
                 subscriptionRepository.save(subscriptions);
             }
             else
-                return ResponseEntity.badRequest().build();
+                throw new SubscriptionAlreadyExistException();
         }
         catch(Exception ex){
             ex.printStackTrace();

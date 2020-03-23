@@ -1,5 +1,6 @@
 package com.Jobportal.demo.Service.Impl;
 
+import com.Jobportal.demo.Exception.UserNotFoundException;
 import com.Jobportal.demo.Model.SessionIds;
 import com.Jobportal.demo.Model.User;
 import com.Jobportal.demo.Response.LoginUserResponse;
@@ -37,6 +38,7 @@ public class LoginUserService implements ILoginJobService {
     public LoginUserResponse loginUserStatus(List<User> users, String username, String password, String clientId) throws Exception {
         String txnToken = null;
         String status = FAIL;
+
         for (User user:users){
             if(user.getUsername().equalsIgnoreCase(username) && user.getPassword().equalsIgnoreCase(password)){
                  txnToken = iTokenService.encryptTxnToken(clientId,username);
@@ -47,6 +49,7 @@ public class LoginUserService implements ILoginJobService {
                      iSessionToken.save(sessionIds);
                  }
 
+
             /*   Map userHash = new ObjectMapper().convertValue(user, Map.class);
                 redisTemplate.opsForHash().put(username, txnToken, userHash);*/
 
@@ -56,6 +59,9 @@ public class LoginUserService implements ILoginJobService {
              //save in redis
                 System.out.println("saved in DB");
             }
+        }
+        if(status==FAIL) {
+            throw new UserNotFoundException();
         }
         final LoginUserResponse loginUserResponse = LoginUserResponse.builder().status(status).txnToken(txnToken).build();
         return loginUserResponse;
