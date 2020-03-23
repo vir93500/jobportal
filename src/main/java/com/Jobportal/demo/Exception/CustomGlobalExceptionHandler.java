@@ -52,7 +52,7 @@ public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler
     public ResponseEntity<CustomErrorResponse> SubscriptionAlreadyExistException1() {
         errors.setError(ExceptionCodes.SUBSCRIPTION_ALREADY_EXIST.errMsg());
         errors.setStatus(ExceptionCodes.SUBSCRIPTION_ALREADY_EXIST.errCode());
-        return new ResponseEntity<>(errors, HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(InternalServerErrorException.class)

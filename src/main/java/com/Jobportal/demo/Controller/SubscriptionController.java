@@ -21,21 +21,15 @@ public class SubscriptionController {
     @PostMapping(value = "/addSubscription")
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<Object> addSubscription(@RequestBody SubscriptionCreationRequest request) throws Exception {
-        try{
             System.out.println("subss"+request.getSubscriptionName());
 
             String subsname = subscriptionRepository.getSubscriptionByName(request.getSubscriptionName());
-            if(subsname!="") {
+            if(subsname==null) {
                 Subscriptions subscriptions = new Subscriptions(request.getSubscriptionName(), request.getSubscriptionValidity(), request.getTotalJobsApply(), request.getCompanies(), request.getColor(), request.getPrice());
                 subscriptionRepository.save(subscriptions);
             }
             else
                 throw new SubscriptionAlreadyExistException();
-        }
-        catch(Exception ex){
-            ex.printStackTrace();
-            throw new Exception();
-        }
         return ResponseEntity.ok().build();
     }
 }
