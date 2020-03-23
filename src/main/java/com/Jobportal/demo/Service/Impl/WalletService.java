@@ -3,10 +3,13 @@ package com.Jobportal.demo.Service.Impl;
 import com.Jobportal.demo.Model.AddMoney;
 import com.Jobportal.demo.Model.TransactionId;
 import com.Jobportal.demo.Repository.AddMoneyRepository;
+import com.Jobportal.demo.Repository.SessionTokenRepository;
 import com.Jobportal.demo.Request.AddMoneyRequest;/*
 import com.Jobportal.demo.Response.AddMoneyResponse*/;
+import com.Jobportal.demo.Response.AddMoneyResponse;
 import com.Jobportal.demo.Service.ITransactionIdGenerator;
 import com.Jobportal.demo.Service.IWalletService;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -25,6 +28,11 @@ public class WalletService implements IWalletService {
     @Autowired
     AddMoneyRepository addMoneyRepository;
 
+    @Autowired
+    SessionTokenRepository sessionTokenRepository;
+
+    AddMoneyResponse addMoneyResponse = new AddMoneyResponse();
+
     @Override
     public String transIdGenerator() {
         List<TransactionId> transId =  iTransactionIdGenerator.findAll();
@@ -39,8 +47,13 @@ public class WalletService implements IWalletService {
         return newTxnId;
     }
 
-    public AddMoney addMoneytInWallet(AddMoneyRequest addMoneyRequest) throws Exception {
+    public AddMoneyResponse addMoneytInWallet(AddMoneyRequest addMoneyRequest) throws Exception {
         //check session token is present or not
+        if(sessionTokenRepository.findSessionTokenDb(addMoneyRequest.getUsername())==null){
+            System.out.println("User is not logged in");
+             throw new Exception();
+        }
+
         boolean isRequestedMoneyCorrect = true;
         long requestedMoney = addMoneyRequest.getMoney();
         if(requestedMoney<=4000){
@@ -50,17 +63,14 @@ public class WalletService implements IWalletService {
             throw new Exception("Requested balance is less than 4K");
         }
         String transId=transIdGenerator();
-        System.out.println("This is an info message of transId "+transId);
-        AddMoney addMoney = new AddMoney();
-        addMoney.setTransactionId(transId);
-        addMoney.setMoney(requestedMoney);
-        addMoney.setUsername(addMoneyRequest.getUsername());
-        addMoneyDB(addMoney);
-        return addMoney;
+        addMoneyResponse.setTransId(transId);
+        addMoneyDB(addMoneyResponse);
+        return addMoneyResponse;
     }
 
-    public void addMoneyDB(AddMoney addMoney){
-
-        addMoneyRepository.save(addMoney);
+    public void addMoneyDB(AddMoneyResponse addMoneyResponse){
+        ModelMapper modelMapper = new ModelMapper();
+        AddMoney addMoneyDto = modelMapper.map(addMoneyResponse, AddMoney.class);
+        addMoneyRepository.save(addMoneyDto);
     }
 }

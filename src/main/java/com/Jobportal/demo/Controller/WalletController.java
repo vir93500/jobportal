@@ -5,6 +5,7 @@ import com.Jobportal.demo.Model.TransactionId;
 import com.Jobportal.demo.Repository.AddMoneyRepository;
 import com.Jobportal.demo.Request.AddMoneyRequest;/*
 import com.Jobportal.demo.Response.AddMoneyResponse;*/
+import com.Jobportal.demo.Response.AddMoneyResponse;
 import com.Jobportal.demo.Response.LoginUserResponse;
 import com.Jobportal.demo.Service.ITransactionIdGenerator;
 import com.Jobportal.demo.Service.IWalletService;
@@ -26,23 +27,20 @@ public class WalletController {
     @Autowired
     ITransactionIdGenerator iTransactionIdGenerator;
 
-    /*@Autowired
-    AddMoney addMoney;*/
-
     @PostMapping(value = "/addMoneyInWallet")
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<AddMoney> addSubscription(@RequestBody AddMoneyRequest addMoneyRequest) throws Exception {
-        AddMoney addMoney = new AddMoney();
-        try{
+    public ResponseEntity<AddMoneyResponse> addSubscription(@RequestBody AddMoneyRequest addMoneyRequest) throws Exception {
+       // AddMoney addMoney = new AddMoney();
+      //  try{
           //  AddMoney addMoney = new AddMoney(request.getUsername(),request.getMoney());
-            addMoney =  iWalletService.addMoneytInWallet(addMoneyRequest);
+            AddMoneyResponse  addMoneyResponse =  iWalletService.addMoneytInWallet(addMoneyRequest);
 
-        }
+       /* }
         catch(Exception ex){
             ex.printStackTrace();
             throw new Exception();
-        }
-        return  new ResponseEntity<AddMoney>(addMoney, HttpStatus.OK);
+        }*/
+        return  new ResponseEntity<AddMoneyResponse>(addMoneyResponse, HttpStatus.OK);
     }
 
     @PostMapping(value = "/addTransid")

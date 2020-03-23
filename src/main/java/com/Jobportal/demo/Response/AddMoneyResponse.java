@@ -1,4 +1,3 @@
-/*
 package com.Jobportal.demo.Response;
 
 
@@ -13,8 +12,6 @@ import lombok.NoArgsConstructor;
 public class AddMoneyResponse {
 
     private String transId;
-    private long money;
-    private String username;
 
 }
-*/
+
